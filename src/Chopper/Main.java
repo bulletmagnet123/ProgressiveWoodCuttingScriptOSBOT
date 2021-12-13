@@ -152,7 +152,7 @@ public class Main extends Script {
         if (wcLvl >= 11) {
 
             log("Withdrawing Axe Set To Black axe");
-            MainAxe = "Adamant axe";
+            MainAxe = "Black axe";
         }
         if (wcLvl >= 21) {
             log("Withdrawing Axe Set To Mithril axe");
@@ -206,7 +206,7 @@ public class Main extends Script {
         if (wcLvl >= 11) {
 
             log("Withdrawing Axe Set To Black axe");
-            MainAxe = "Adamant axe";
+            MainAxe = "Black axe";
         }
         if (wcLvl >= 21) {
             log("Withdrawing Axe Set To Mithril axe");
@@ -259,7 +259,7 @@ public class Main extends Script {
     @Override
     public void onPaint(Graphics2D g) {
         Point mP = getMouse().getPosition();
-
+        g.setColor(Color.RED);
         // Draw a line from top of screen (0), to bottom (500), with mouse x coordinate
         g.drawLine(mP.x, 0, mP.x, 500);
 
@@ -268,7 +268,7 @@ public class Main extends Script {
 
         g.drawLine(mP.x - 5, mP.y + 5, mP.x + 5, mP.y - 5);
         g.drawLine(mP.x + 5, mP.y + 5, mP.x - 5, mP.y - 5);
-        g.setColor(Color.RED);
+
         g.setColor(new Color(51, 51, 51, 140));
         g.drawRect(10, 250, 300, 400);
         g.fillRect(10, 250, 300, 400);
