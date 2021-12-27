@@ -8,12 +8,17 @@ import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import org.osbot.rs07.utility.ConditionalSleep;
+import org.osbot.rs07.api.model.RS2Object;
 
 import java.awt.*;
+import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 @ScriptManifest(name = "Bullets OSBOT Chopper", author = "Bulletmagnet", logo = "", version = 0.1, info = "Woodcutting script")
 public class Main extends Script {
+    Area DraynorTrees = new Area(3072, 3276, 3088, 3262);
+    Area DraynorOak = new Area(3103, 3241, 3098, 3246);
+    Area Willows = new Area(3064, 3256, 3056, 3249);
     public int treesChopped = 0;
 
     private long timeBegan;
@@ -21,6 +26,7 @@ public class Main extends Script {
 
     private int beginningXp;
     private int wcLevel;
+    PaintAPI paint = new PaintAPI();
 
     public long startTime = 0L, millis = 0L, hours = 0L;
 
@@ -80,9 +86,7 @@ public class Main extends Script {
 
 
     public void chop() throws InterruptedException {
-        Area DraynorTrees = new Area(3072, 3276, 3088, 3262);
-        Area DraynorOak = new Area(3103, 3241, 3098, 3246);
-        Area Willows = new Area(3064, 3256, 3056, 3249);
+
         Area CHOPHERE = null;
         RS2Object TREE = null;
         int wcLvl = getSkills().getStatic(Skill.WOODCUTTING);
@@ -185,7 +189,9 @@ public class Main extends Script {
 
     @Override
     public void onStart() throws InterruptedException {
+        paint.exchangeContext(bot);
         super.onStart();
+        getCamera().toTop();
 
         timeBegan = System.currentTimeMillis();
         startTime = System.currentTimeMillis();
@@ -258,6 +264,12 @@ public class Main extends Script {
 
     @Override
     public void onPaint(Graphics2D g) {
+        g.setColor(Color.BLUE);
+        for (RS2Object i : objects.getAll()) {
+            if (i.getName().equals("Willow") && Willows.contains(i)) {
+                paint.drawEntity(g, i, "Willow Tree", true, false, false, true, false, false, true);
+            }
+        }
         Point mP = getMouse().getPosition();
         g.setColor(Color.RED);
         // Draw a line from top of screen (0), to bottom (500), with mouse x coordinate
@@ -284,7 +296,6 @@ public class Main extends Script {
         g.drawString("Trees Chopped: " + treesChopped, 130, 425);
         g.drawString("current xp: " + getSkills().getExperience(Skill.WOODCUTTING), 130, 450);
         g.drawString("Should use axe: " + AxeShouldHave(), 120, 475);
-
 
     }
 
