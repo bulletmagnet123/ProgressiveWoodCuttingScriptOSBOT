@@ -39,28 +39,6 @@ public class Main extends Script {
         }
     }
 
-    public int Axe() {
-        if (skills.getDynamic(Skill.WOODCUTTING) < 6) {
-            return 1351;
-        }
-        if (skills.getDynamic(Skill.WOODCUTTING) >= 6 && skills.getDynamic(Skill.WOODCUTTING) < 11) {
-            return 1353;
-        }
-        if (skills.getDynamic(Skill.WOODCUTTING) >= 11 && skills.getDynamic(Skill.WOODCUTTING) < 21) {
-            return 1361;
-        }
-        if (skills.getDynamic(Skill.WOODCUTTING) >= 21 && skills.getDynamic(Skill.WOODCUTTING) < 31) {
-            return 1355;
-        }
-        if (skills.getDynamic(Skill.WOODCUTTING) >= 31 && skills.getDynamic(Skill.WOODCUTTING) < 41) {
-            return 1357;
-        }
-        if (skills.getDynamic(Skill.WOODCUTTING) >= 41) {
-            return 1359;
-        }
-        return 0;
-    }
-
 
 
 
@@ -109,7 +87,7 @@ public class Main extends Script {
             log("Set CHOPEHERE to WILLOWS");
         }
         log("Just finished getting: TREELOCATION AND TREE");
-        if (getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe") && !getInventory().isFull()) {
+        if (getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe") && !getInventory().isFull()) {
             if (!CHOPHERE.contains(myPlayer())) {
                 log("SHOULD START WALKING TO TREE LOCATION.: BEGGGNING OF IF STATMENT :");
                 getWalking().webWalk(CHOPHERE.getRandomPosition());
@@ -143,7 +121,7 @@ public class Main extends Script {
         getBank().open();
         sleep(random(1200, 2700));
         if (getInventory().isFull()) {
-            getBank().depositAllExcept("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe");
+            getBank().depositAllExcept("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe");
         }
         if (wcLvl <= 5){
             log("Withdrawing Axe Set To Bronze axe");
@@ -169,6 +147,10 @@ public class Main extends Script {
         if (wcLvl >= 41) {
             log("Withdrawing Axe Set To Rune axe");
             MainAxe = "Rune axe";
+        }
+        if (wcLvl >= 61) {
+            log("Withdrawing Axe Set To Dragon axe");
+            MainAxe = "Dragon axe";
         }
         log("Withdrawing Rune axe");
         walking.walk(getBank().closest());
@@ -226,6 +208,10 @@ public class Main extends Script {
             log("Withdrawing Axe Set To Rune axe");
             MainAxe = "Rune axe";
         }
+        if (wcLvl >= 61) {
+            log("Withdrawing Axe Set To Dragon axe");
+            MainAxe = "Dragon axe";
+        }
         return MainAxe;
     }
 
@@ -251,6 +237,9 @@ public class Main extends Script {
         }
         if (wcLvl >= 41) {
             MainAxe = "Rune axe";
+        }
+        if (wcLvl >= 61) {
+            MainAxe = "Dragon axe";
         }
         if (!getInventory().isFull() && getInventory().contains(MainAxe)) {
             chop();
