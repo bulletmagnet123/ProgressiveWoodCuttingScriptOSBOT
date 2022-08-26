@@ -10,6 +10,7 @@ import org.osbot.rs07.script.ScriptManifest;
 import org.osbot.rs07.utility.ConditionalSleep;
 import org.osbot.rs07.api.model.RS2Object;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,9 @@ public class Main extends Script {
     private int beginningXp;
     private int wcLevel;
     PaintAPI paint = new PaintAPI();
+    boolean StartScript = false;
+    String BankOrDrop = "drop";
+
 
     public long startTime = 0L, millis = 0L, hours = 0L;
 
@@ -44,21 +48,37 @@ public class Main extends Script {
 
     public void bank() throws InterruptedException {
         log("Running bank method");
-        if (getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe")) {
+        if (getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")) {
             if (getInventory().isFull()) {
                 walking.walk(getBank().closest());
                 sleep(random(1400, 2700));
                 getBank().open();
-                sleep(random(1700, 2300));
-                getBank().depositAllExcept("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe");
+
+                getBank().depositAllExcept("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe");
                 sleep(random(1700, 2300));
                 getBank().close();
                 sleep(random(1700, 2300));
             }
-        } else if (!getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe")) {
+        } else if (!getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")) {
             GetWcEquipment();
         } else {
             chop();
+        }
+    }
+    public void drop () throws InterruptedException {
+        log("Running bank method");
+        if (getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")) {
+            if (getInventory().isFull()) {
+                sleep(random(800, 1300));
+                getInventory().dropAllExcept(AxeShouldHave());
+                sleep(random(800, 1300));
+            } else {
+                chop();
+            }
+        } else if (!getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")){
+            GetWcEquipment();
+        } else {
+            return;
         }
     }
 
@@ -152,7 +172,6 @@ public class Main extends Script {
             log("Withdrawing Axe Set To Dragon axe");
             MainAxe = "Dragon axe";
         }
-        log("Withdrawing Rune axe");
         walking.walk(getBank().closest());
         sleep(random(1400, 2700));
         getBank().open();
@@ -174,7 +193,7 @@ public class Main extends Script {
         paint.exchangeContext(bot);
         super.onStart();
         getCamera().toTop();
-
+        GUI();
         timeBegan = System.currentTimeMillis();
         startTime = System.currentTimeMillis();
         wcLevel = skills.getVirtualLevel(Skill.WOODCUTTING);
@@ -218,38 +237,56 @@ public class Main extends Script {
 
     @Override
     public int onLoop() throws InterruptedException {
-        int wcLvl = getSkills().getStatic(Skill.WOODCUTTING);
-        String MainAxe = null;
-        if (wcLvl <= 5) {
-            MainAxe = "Bronze axe";
-        }
-        if (wcLvl >= 6) {
-            MainAxe = "Steel axe";
-        }
-        if (wcLvl >= 11) {
-            MainAxe = "Black axe";
-        }
-        if (wcLvl >= 21) {
-            MainAxe = "Mithril axe";
-        }
-        if (wcLvl >= 31) {
-            MainAxe = "Adamant axe";
-        }
-        if (wcLvl >= 41) {
-            MainAxe = "Rune axe";
-        }
-        if (wcLvl >= 61) {
-            MainAxe = "Dragon axe";
-        }
-        if (!getInventory().isFull() && getInventory().contains(MainAxe)) {
-            chop();
-        } else if (!getInventory().contains(MainAxe)) {
-            GetWcEquipment();
-        } else {
-            bank();
+        if (StartScript == true) {
+            String MainAxe = AxeShouldHave();
+
+            if (!getInventory().isFull() && getInventory().contains(MainAxe)) {
+                chop();
+            } else if (!getInventory().contains(MainAxe)) {
+                GetWcEquipment();
+            } else {
+                if (BankOrDrop == "bank"){
+                    bank();
+                } else {
+                    drop();
+                }
+
+            }
         }
         return 602;
+
     }
+    public void GUI () {
+        JFrame frame = new JFrame();
+        frame.setTitle("BulletsChopper");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(300, 170));
+        frame.pack();
+        frame.setVisible(true);
+
+        JPanel settingPanel = new JPanel();
+        frame.add(settingPanel);
+
+
+        settingPanel.setLayout(new GridLayout(0, 2));
+        JLabel Mode = new JLabel();
+        Mode.setText("Bank or Drop");
+        settingPanel.add(Mode);
+        JComboBox<String> BankorDopBox = new JComboBox<>(new String[]{
+                "BANK", "DROP"
+        });
+        settingPanel.add(BankorDopBox);
+        JButton start = new JButton();
+        settingPanel.add(start);
+
+        start.setText("Start");
+        start.addActionListener(l -> {
+            BankOrDrop = BankorDopBox.getSelectedItem().toString();
+            StartScript = true;
+            frame.dispose();
+        });
+    }
+
 
     @Override
     public void onPaint(Graphics2D g) {
