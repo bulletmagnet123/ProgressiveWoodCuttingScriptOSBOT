@@ -1,18 +1,17 @@
 package Chopper;
 
-import org.osbot.rs07.api.*;
+import org.osbot.rs07.api.Inventory;
 import org.osbot.rs07.api.map.Area;
+import org.osbot.rs07.api.map.constants.Banks;
 import org.osbot.rs07.api.model.RS2Object;
 import org.osbot.rs07.api.ui.Message;
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import org.osbot.rs07.utility.ConditionalSleep;
-import org.osbot.rs07.api.model.RS2Object;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 @ScriptManifest(name = "Bullets OSBOT Chopper", author = "Bulletmagnet", logo = "", version = 0.1, info = "Woodcutting script")
@@ -29,12 +28,11 @@ public class Main extends Script {
     private int wcLevel;
     PaintAPI paint = new PaintAPI();
     boolean StartScript = false;
-    String BankOrDrop = "drop";
+
+    boolean BankorDrop = Boolean.parseBoolean(null);
 
 
     public long startTime = 0L, millis = 0L, hours = 0L;
-
-
 
 
     public void onMessage(Message m) {
@@ -43,7 +41,9 @@ public class Main extends Script {
         }
     }
 
+    public void GetAxesFromGe() {
 
+    }
 
 
     public void bank() throws InterruptedException {
@@ -65,21 +65,49 @@ public class Main extends Script {
             chop();
         }
     }
-    public void drop () throws InterruptedException {
-        log("Running bank method");
-        if (getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")) {
-            if (getInventory().isFull()) {
-                sleep(random(800, 1300));
-                getInventory().dropAllExcept(AxeShouldHave());
-                sleep(random(800, 1300));
+
+    public void drop() throws InterruptedException {
+        log("Running drop method");
+        if (BankorDrop == false) {
+            if (getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")) {
+                if (getInventory().isFull()) {
+                    sleep(random(800, 1300));
+                    getInventory().dropAllExcept(AxeShouldHave());
+                    sleep(random(800, 1300));
+                } else {
+                    chop();
+                }
+            } else if (!getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")) {
+                GetWcEquipment();
             } else {
-                chop();
+                getInventory().dropAllExcept(AxeShouldHave());
             }
-        } else if (!getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")){
-            GetWcEquipment();
         } else {
-            return;
+            bank();
         }
+
+    }
+
+    public void BuyWcEquipment() throws InterruptedException {
+        if (getInventory().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe") && !bank.contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe")) {
+            sleep(random(1400, 2700));
+            return;
+        } else {
+
+        }
+    }
+
+    public void ShouldWalkToGE() throws InterruptedException {
+        if (!getBank().contains("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe")) {
+            ;
+            sleep(random(1400, 2700));
+            getWalking().webWalk(Banks.GRAND_EXCHANGE);
+        }
+
+    }
+
+    public void HasCash() {
+
     }
 
 
@@ -132,6 +160,7 @@ public class Main extends Script {
             bank();
         }
     }
+
     public void GetWcEquipment() throws InterruptedException {
         log("GETTING EQUiPMENT");
         int wcLvl = getSkills().getStatic(Skill.WOODCUTTING);
@@ -143,7 +172,7 @@ public class Main extends Script {
         if (getInventory().isFull()) {
             getBank().depositAllExcept("Bronze axe", "Black axe", "Iron axe", "Steel axe", "Mithril axe", "Adamant axe", "Rune axe", "Dragon axe");
         }
-        if (wcLvl <= 5){
+        if (wcLvl <= 5) {
             log("Withdrawing Axe Set To Bronze axe");
             MainAxe = "Bronze axe";
         }
@@ -178,7 +207,7 @@ public class Main extends Script {
         sleep(random(1200, 2700));
         getBank().depositAll();
         sleep(random(1200, 2700));
-        if (!getInventory().contains(MainAxe)){
+        if (!getInventory().contains(MainAxe)) {
             sleep(random(1200, 2700));
             getBank().withdraw(MainAxe, 1);
             sleep(random(1200, 2700));
@@ -199,10 +228,11 @@ public class Main extends Script {
         wcLevel = skills.getVirtualLevel(Skill.WOODCUTTING);
         beginningXp = skills.getExperience(Skill.WOODCUTTING);
     }
-    public String AxeShouldHave(){
+
+    public String AxeShouldHave() {
         int wcLvl = getSkills().getStatic(Skill.WOODCUTTING);
         String MainAxe = null;
-        if (wcLvl <= 5){
+        if (wcLvl <= 5) {
             log("Withdrawing Axe Set To Bronze axe");
             MainAxe = "Bronze axe";
         }
@@ -237,26 +267,22 @@ public class Main extends Script {
 
     @Override
     public int onLoop() throws InterruptedException {
-        if (StartScript == true) {
-            String MainAxe = AxeShouldHave();
-
-            if (!getInventory().isFull() && getInventory().contains(MainAxe)) {
-                chop();
-            } else if (!getInventory().contains(MainAxe)) {
-                GetWcEquipment();
-            } else {
-                if (BankOrDrop == "bank"){
-                    bank();
+        String MainAxe = AxeShouldHave();
+        if (!getInventory().isFull() && getInventory().contains(MainAxe)) {
+            chop();
+            if (getInventory().isFull() && !getInventory().contains(MainAxe)) {
+                bank();
+                if (!getInventory().contains(MainAxe)) {
+                    GetWcEquipment();
                 } else {
-                    drop();
-                }
 
+                }
             }
         }
         return 602;
-
     }
-    public void GUI () {
+
+    public void GUI() {
         JFrame frame = new JFrame();
         frame.setTitle("BulletsChopper");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -275,21 +301,30 @@ public class Main extends Script {
         JComboBox<String> BankorDopBox = new JComboBox<>(new String[]{
                 "BANK", "DROP"
         });
+
+
+
         settingPanel.add(BankorDopBox);
         JButton start = new JButton();
         settingPanel.add(start);
 
         start.setText("Start");
         start.addActionListener(l -> {
-            BankOrDrop = BankorDopBox.getSelectedItem().toString();
             StartScript = true;
             frame.dispose();
         });
     }
 
+    public class gui2 {
+
+
+
+    }
+
 
     @Override
     public void onPaint(Graphics2D g) {
+
         g.setColor(Color.BLUE);
         for (RS2Object i : objects.getAll()) {
             if (i.getName().equals("Willow") && Willows.contains(i)) {
@@ -325,19 +360,15 @@ public class Main extends Script {
 
     }
 
-    private String ft(long duration)
-    {
+    private String ft(long duration) {
         String res = "";
         long days = TimeUnit.MILLISECONDS.toDays(duration);
         long hours = TimeUnit.MILLISECONDS.toHours(duration) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(duration));
         long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(duration));
         long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
-        if (days == 0)
-        {
+        if (days == 0) {
             res = (hours + ":" + minutes + ":" + seconds);
-        }
-        else
-        {
+        } else {
             res = (days + ":" + hours + ":" + minutes + ":" + seconds);
         }
         return res;
