@@ -270,8 +270,9 @@ public class Main extends Script {
         String MainAxe = AxeShouldHave();
         if (!getInventory().isFull() && getInventory().contains(MainAxe)) {
             chop();
-            if (getInventory().isFull() && !getInventory().contains(MainAxe)) {
+            if (getInventory().isFull() || !getInventory().contains(MainAxe)) {
                 bank();
+                GetWcEquipment();
                 if (!getInventory().contains(MainAxe)) {
                     GetWcEquipment();
                 } else {
@@ -279,7 +280,7 @@ public class Main extends Script {
                 }
             }
         }
-        return 602;
+        return 678;
     }
 
     public void GUI() {
@@ -313,6 +314,8 @@ public class Main extends Script {
             StartScript = true;
             frame.dispose();
         });
+        String BoD = (String) BankorDopBox.getSelectedItem();
+
     }
 
     public class gui2 {
