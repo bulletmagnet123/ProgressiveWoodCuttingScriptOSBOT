@@ -1,5 +1,6 @@
 package Chopper;
 
+import com.sun.org.apache.bcel.internal.generic.ClassObserver;
 import org.osbot.rs07.api.Inventory;
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.constants.Banks;
@@ -16,6 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 @ScriptManifest(name = "Bullets OSBOT Chopper", author = "Bulletmagnet", logo = "", version = 0.1, info = "Woodcutting script")
 public class Main extends Script {
+    public String tree;
+
+
     Area DraynorTrees = new Area(3072, 3276, 3088, 3262);
     Area DraynorOak = new Area(3103, 3241, 3098, 3246);
     Area Willows = new Area(3064, 3256, 3056, 3249);
@@ -222,7 +226,7 @@ public class Main extends Script {
         paint.exchangeContext(bot);
         super.onStart();
         getCamera().toTop();
-        GUI();
+
         timeBegan = System.currentTimeMillis();
         startTime = System.currentTimeMillis();
         wcLevel = skills.getVirtualLevel(Skill.WOODCUTTING);
@@ -270,53 +274,18 @@ public class Main extends Script {
         String MainAxe = AxeShouldHave();
         if (!getInventory().isFull() && getInventory().contains(MainAxe)) {
             chop();
+        } else {
             if (getInventory().isFull() || !getInventory().contains(MainAxe)) {
                 bank();
-                GetWcEquipment();
                 if (!getInventory().contains(MainAxe)) {
                     GetWcEquipment();
-                } else {
-
                 }
             }
         }
         return 678;
     }
 
-    public void GUI() {
-        JFrame frame = new JFrame();
-        frame.setTitle("BulletsChopper");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(300, 170));
-        frame.pack();
-        frame.setVisible(true);
 
-        JPanel settingPanel = new JPanel();
-        frame.add(settingPanel);
-
-
-        settingPanel.setLayout(new GridLayout(0, 2));
-        JLabel Mode = new JLabel();
-        Mode.setText("Bank or Drop");
-        settingPanel.add(Mode);
-        JComboBox<String> BankorDopBox = new JComboBox<>(new String[]{
-                "BANK", "DROP"
-        });
-
-
-
-        settingPanel.add(BankorDopBox);
-        JButton start = new JButton();
-        settingPanel.add(start);
-
-        start.setText("Start");
-        start.addActionListener(l -> {
-            StartScript = true;
-            frame.dispose();
-        });
-        String BoD = (String) BankorDopBox.getSelectedItem();
-
-    }
 
     public class gui2 {
 
